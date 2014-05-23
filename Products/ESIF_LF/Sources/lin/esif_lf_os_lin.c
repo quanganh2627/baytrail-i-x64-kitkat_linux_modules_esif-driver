@@ -1909,15 +1909,26 @@ void esif_lf_uninstrument_participant(struct esif_lp *lp_ptr)
 enum esif_rc esif_lf_send_event(
 	const struct esif_participant_iface *pi_ptr,
 	const struct esif_event *event_ptr,
-	char * custom_message
+	char *custom_message,
+	unsigned int force_fail,  /* for events that require listeners */
+	int num_repeat
 	)
 {
+	enum esif_rc rc = ESIF_OK;
 	struct device *dev_ptr     = pi_ptr->device;
 	struct kobj_uevent_env *ue = esif_ccb_malloc(sizeof(*ue));
-	
+	int evnt_cntr = 0;
+	unsigned long event_pause = jiffies + (1 * HZ);
+
+	if (force_fail) {
+		rc = ESIF_E_ACTION_NOT_IMPLEMENTED;
+		goto exit;
+	}
 
 	if (custom_message != NULL) {
 		add_uevent_var(ue, "DPTF:THERMAL_REQUEST_ACTION=%s",
+	    custom_message);
+	    ESIF_TRACE_DEBUG("SIGNALING UEVENT CUSTOM ACTION REQUEST: %s \n",
 	    custom_message);
 	}
 	else {
@@ -1938,11 +1949,23 @@ enum esif_rc esif_lf_send_event(
 			event_ptr->src,
 			event_ptr->dst);
 		}
+		ESIF_TRACE_DEBUG("THROWING UEVENT OF TYPE: %d \n",
+	    event_ptr->type);
 	}
-	
-	kobject_uevent_env(&dev_ptr->kobj, KOBJ_CHANGE, ue->envp);
+
+	for (evnt_cntr = 0;evnt_cntr < num_repeat;evnt_cntr++) {
+		kobject_uevent_env(&dev_ptr->kobj, KOBJ_CHANGE, ue->envp);
+		ESIF_TRACE_DEBUG("UEVENT SENT: %d \n",
+	    event_ptr->type);
+		if (num_repeat > 1) {
+			while (time_before(jiffies, event_pause)) {
+				cpu_relax();
+			}
+		}
+	}
+exit:
 	esif_ccb_free(ue);
-	return ESIF_OK;
+	return rc;
 }
 
 

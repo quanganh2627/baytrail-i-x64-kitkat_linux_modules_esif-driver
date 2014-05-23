@@ -326,15 +326,15 @@ enum esif_rc esif_set_action_code(
 		break;
 
 	case 'NDHS':	/* SHDN send shutdown uevent request */
-		ESIF_TRACE_DYN_SET("ATTEMPTING SHUTDOWN FOR ANDROID \n");
-		rc = esif_set_action_code_uevent(lp_ptr->pi_ptr,"shutdown");
-		ESIF_TRACE_DYN_SET("SHUTDOWN RC: %s(%d)\n", esif_rc_str(rc), rc);
+		rc = esif_lf_send_event(lp_ptr->pi_ptr, NULL, "shutdown", UEVENT_SHUTDOWN_FAIL, UEVENT_SHUTDOWN_REPEAT);
 		break;
 		
 	case 'PSUS':	/* SUSP send suspend uevent request */
-		ESIF_TRACE_DYN_SET("ATTEMPTING SUSPEND FOR ANDROID \n");
-		rc = esif_set_action_code_uevent(lp_ptr->pi_ptr,"suspend");
-		ESIF_TRACE_DYN_SET("SUSPEND RC: %s(%d)\n", esif_rc_str(rc), rc);
+		rc = esif_lf_send_event(lp_ptr->pi_ptr, NULL, "suspend", UEVENT_SUSPEND_FAIL, 1);
+		/* reset state in case of an interrupted suspension */
+		if (!UEVENT_SUSPEND_FAIL) {
+			esif_lf_event(lp_ptr->pi_ptr, ESIF_EVENT_PARTICIPANT_RESUME, 'NA', NULL);
+		}
 		break;
 
 	default:

@@ -95,11 +95,13 @@
 #endif	/* ESIF_ATTR_OS_LINUX */
 
 #ifdef ESIF_ATTR_OS_ANDROID
-#define esif_set_action_code_uevent(pi_ptr,msg) \
-	esif_lf_send_event(pi_ptr, NULL, msg)
+#define UEVENT_SHUTDOWN_FAIL 0
+#define UEVENT_SUSPEND_FAIL 1
+#define UEVENT_SHUTDOWN_REPEAT 20
 #else
-#define esif_set_action_code_uevent(msg) \
-	ESIF_E_ACTION_NOT_IMPLEMENTED
+#define UEVENT_SHUTDOWN_FAIL 1
+#define UEVENT_SUSPEND_FAIL 1
+#define UEVENT_SHUTDOWN_REPEAT 0
 #endif /* ESIF_ATTR_OS_ANDROID */
 
 #endif /* _ESIF_LF_CCB_GEN_ACTION_ */

@@ -317,7 +317,7 @@ enum esif_rc esif_lf_event(
 	ESIF_TRACE_DYN_EVENT("type %s(%d)\n", esif_event_type_str(type), type);
 
 	esif_lf_send_all_events_in_queue_to_uf_by_ipc();
-	esif_lf_send_event(lp_ptr->pi_ptr, event_ptr, NULL);
+	esif_lf_send_event(lp_ptr->pi_ptr, event_ptr, NULL, 0, 1);
 	esif_event_free(event_ptr);
 
 exit:

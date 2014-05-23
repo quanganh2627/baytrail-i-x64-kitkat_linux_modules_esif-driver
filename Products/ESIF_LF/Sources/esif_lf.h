@@ -84,7 +84,9 @@ enum esif_rc esif_lf_event(
 enum esif_rc esif_lf_send_event(
 	const struct esif_participant_iface *pi_ptr,
 	const struct esif_event *event_ptr,
-	char *custom_message
+	char *custom_message,
+	unsigned int force_fail,
+	int num_repeat
 );
 enum esif_rc esif_lf_send_all_events_in_queue_to_uf_by_ipc(void);
 
