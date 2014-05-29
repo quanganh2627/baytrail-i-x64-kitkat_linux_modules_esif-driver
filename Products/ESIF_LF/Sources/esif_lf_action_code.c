@@ -326,6 +326,10 @@ enum esif_rc esif_set_action_code(
 		break;
 
 	case 'NDHS':	/* SHDN send shutdown uevent request */
+		/* reset state */
+		if (!UEVENT_SHUTDOWN_FAIL) {
+			esif_lf_event(lp_ptr->pi_ptr, ESIF_EVENT_PARTICIPANT_RESUME, 'NA', NULL);
+		}
 		rc = esif_lf_send_event(lp_ptr->pi_ptr, NULL, "shutdown", UEVENT_SHUTDOWN_FAIL, UEVENT_SHUTDOWN_REPEAT);
 		break;
 		
