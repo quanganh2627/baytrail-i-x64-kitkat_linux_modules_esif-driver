@@ -173,7 +173,7 @@ static ESIF_INLINE void esif_ccb_uni2ascii(
 #endif /* ESIF_ATTR_OS_WINDOWS */
 
 #ifdef ESIF_ATTR_OS_LINUX
-#define esif_ccb_sprintf(siz, str, fmt, ...) sprintf(str, fmt, ##__VA_ARGS__)
+#define esif_ccb_sprintf(siz, str, fmt, ...) snprintf(str, siz, fmt, ##__VA_ARGS__)
 #define esif_acpi_memcpy(out, in, len) esif_ccb_memcpy(out, in, len)
 #define esif_acpi_uni2ascii(out, out_len, in, in_len) \
 		esif_ccb_uni2ascii(out, out_len, in, in_len)
@@ -210,10 +210,10 @@ static ESIF_INLINE void esif_ccb_uni2ascii(
 #include <ctype.h>
 #include <stdarg.h>
 
-#define esif_ccb_sprintf(siz, str, fmt, ...) sprintf(str, fmt, ##__VA_ARGS__)
-#define esif_ccb_vsprintf(siz, str, fmt, ...) vsprintf(str, fmt, ##__VA_ARGS__)
+#define esif_ccb_sprintf(siz, str, fmt, ...) snprintf(str, siz, fmt, ##__VA_ARGS__)
+#define esif_ccb_vsprintf(siz, str, fmt, ...) vsnprintf(str, siz, fmt, ##__VA_ARGS__)
 #define esif_ccb_sscanf(str, fmt, var, ...) sscanf(str, fmt, var)
-#define esif_ccb_strtok(str, sep, ctxt) strtok(str, sep)
+#define esif_ccb_strtok(str, sep, ctxt) strtok_r(str, sep, ctxt)
 #define esif_ccb_strcmp(s1, s2) strcmp(s1, s2)
 #define esif_ccb_stricmp(s1, s2) strcasecmp(s1, s2)
 #define esif_ccb_strncmp(s1, s2, count) strncmp(s1, s2, count)
@@ -221,7 +221,7 @@ static ESIF_INLINE void esif_ccb_uni2ascii(
 #define esif_ccb_strstr(str, sub) strstr(str, sub)
 #define esif_ccb_strchr(str, chr) strchr(str, chr)
 #define esif_ccb_strrchr(str, chr) strrchr(str, chr)
-#define esif_ccb_strlen(str, siz) strlen(str)
+#define esif_ccb_strlen(str, siz) strnlen(str, siz)
 #define esif_ccb_strdup_notrace(str) strdup(str)
 
 /* Linux _strupr_s() equlivalent */
@@ -322,7 +322,7 @@ static ESIF_INLINE void esif_ccb_strcpy(
 }
 
 
-#define esif_ccb_strcat(dst, src, size) strcat(dst, src)
+#define esif_ccb_strcat(dst, src, size) strncat(dst, src, (size)-strnlen(dst, size))
 #endif
 
 #define esif_ccb_max(a, b)            ((a) >= (b) ? (a) : (b))

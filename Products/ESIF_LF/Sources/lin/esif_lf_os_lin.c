@@ -1920,6 +1920,11 @@ enum esif_rc esif_lf_send_event(
 	int evnt_cntr = 0;
 	unsigned long event_pause = jiffies + (1 * HZ);
 
+	if (!ue) {
+		rc = ESIF_E_NO_MEMORY;
+		goto exit;
+	}
+
 	if (force_fail) {
 		rc = ESIF_E_ACTION_NOT_IMPLEMENTED;
 		goto exit;
